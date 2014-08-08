@@ -10,3 +10,6 @@ if [[ "$SHLVL" -eq 1 && ! -o LOGIN && -s "${ZDOTDIR:-$HOME}/.zprofile" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprofile"
 fi
 
+export PATH=~/bin:~/bin/drush:usr/local/share/npm/bin:/usr/local/bin:$PATH
+#custom settings for homebrew-php pear
+export PATH="$(brew --prefix php53)/bin:$PATH"

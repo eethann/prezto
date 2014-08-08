@@ -11,4 +11,79 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 fi
 
 # Customize to your needs...
+export PERL_LOCAL_LIB_ROOT="/home/ethan/perl5";
+export PERL_MB_OPT="--install_base /home/ethan/perl5";
+export PERL_MM_OPT="INSTALL_BASE=/home/ethan/perl5";
+export PERL5LIB="/home/ethan/perl5/lib/perl5/x86_64-linux-thread-multi:/home/ethan/perl5/lib/perl5";
+export PATH="/home/ethan/perl5/bin:$PATH";
+
+
+### NVM
+
+source ~/.nvm/nvm.sh
+
+### Bower
+
+alias bower='noglob bower'
+
+### Python
+
+export WORKON_HOME=$HOME/.virtualenvs
+source /usr/local/bin/virtualenvwrapper.sh
+
+### emacs
+
+alias ec="emacsclient -t"
+export EDITOR="emacsclient -t"
+if [ -n "$INSIDE_EMACS" ]; then
+    chpwd() { print -P "\033AnSiTc %d" }
+    print -P "\033AnSiTu %n"
+    print -P "\033AnSiTc %d"
+fi
+
+### percol
+
+function ppgrep() {
+    if [[ $1 == "" ]]; then
+        PERCOL=percol
+    else
+        PERCOL="percol --query $1"
+    fi
+    ps aux | eval $PERCOL | awk '{ print $2 }'
+}
+
+function ppkill() {
+    if [[ $1 =~ "^-" ]]; then
+        QUERY=""            # options only
+    else
+        QUERY=$1            # with a query
+        [[ $# > 0 ]] && shift
+    fi
+    ppgrep $QUERY | xargs kill $*
+}
+
+function exists { which $1 &> /dev/null }
+
+if exists percol; then
+    function percol_select_history() {
+        local tac
+        exists gtac && tac="gtac" || { exists tac && tac="tac" || { tac="tail -r" } }
+        BUFFER=$(fc -l -n 1 | eval $tac | percol --query "$LBUFFER")
+        CURSOR=$#BUFFER         # move cursor
+        zle -R -c               # refresh
+    }
+
+    zle -N percol_select_history
+    bindkey '^R' percol_select_history
+fi
+
+if exists percol; then
+    function breadthdirfind() {
+        for i in 1 2 3 4 5; do find . -mindepth $i -maxdepth $i -type d; done;
+    }
+    alias pcd="cd \`breadthdirfind | percol\`"
+fi
+
+
+
 
